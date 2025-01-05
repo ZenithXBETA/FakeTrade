@@ -1,0 +1,159 @@
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+-- Create ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ZenithXBETA_GUI"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+ScreenGui.DisplayOrder = 1000 -- Always on top
+
+-- Main Frame (Smaller)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0, 300, 0, 180) -- Reduced size
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+MainFrame.BorderSizePixel = 0
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = MainFrame
+
+-- Top Bar
+local TopBar = Instance.new("TextLabel")
+TopBar.Name = "TopBar"
+TopBar.Parent = MainFrame
+TopBar.Size = UDim2.new(1, 0, 0, 25)
+TopBar.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+TopBar.Text = "ZenithXBETA by ryzu"
+TopBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+TopBar.Font = Enum.Font.SourceSansBold
+TopBar.TextSize = 14
+TopBar.TextXAlignment = Enum.TextXAlignment.Left
+TopBar.Padding = UDim.new(0, 10)
+
+local UICornerTopBar = Instance.new("UICorner")
+UICornerTopBar.CornerRadius = UDim.new(0, 12)
+UICornerTopBar.Parent = TopBar
+
+-- Close Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Parent = MainFrame
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Position = UDim2.new(1, -30, 0, 0)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "×"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 16
+
+-- Side Menu
+local SideMenu = Instance.new("Frame")
+SideMenu.Name = "SideMenu"
+SideMenu.Parent = MainFrame
+SideMenu.Size = UDim2.new(0, 80, 1, -25)
+SideMenu.Position = UDim2.new(0, 0, 0, 25)
+SideMenu.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
+
+local UICornerSideMenu = Instance.new("UICorner")
+UICornerSideMenu.CornerRadius = UDim.new(0, 12)
+UICornerSideMenu.Parent = SideMenu
+
+-- Categories Buttons
+local Categories = {"Tab", "Info", "Trade"}
+local Icons = {"", "📚", "🤝"}
+
+for i, category in ipairs(Categories) do
+    local Button = Instance.new("TextButton")
+    Button.Name = category .. "Button"
+    Button.Parent = SideMenu
+    Button.Size = UDim2.new(1, 0, 0, 40)
+    Button.Position = UDim2.new(0, 0, 0, (i - 1) * 50)
+    Button.BackgroundColor3 = Color3.fromRGB(50, 50, 75)
+    Button.Text = Icons[i] .. " " .. category
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Font = Enum.Font.SourceSansBold
+    Button.TextSize = 12 -- Adjusted text size for compactness
+end
+
+-- Content Frames
+local ContentFrames = {}
+
+for _, category in ipairs(Categories) do
+    local Frame = Instance.new("Frame")
+    Frame.Name = category .. "Frame"
+    Frame.Parent = MainFrame
+    Frame.Size = UDim2.new(1, -80, 1, -25)
+    Frame.Position = UDim2.new(0, 80, 0, 25)
+    Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+    Frame.Visible = false
+
+    local UICornerContent = Instance.new("UICorner")
+    UICornerContent.CornerRadius = UDim.new(0, 12)
+    UICornerContent.Parent = Frame
+
+    ContentFrames[category] = Frame
+end
+
+-- Tab Content
+local TabLabel = Instance.new("TextLabel")
+TabLabel.Parent = ContentFrames["Tab"]
+TabLabel.Size = UDim2.new(1, 0, 1, 0)
+TabLabel.BackgroundTransparency = 1
+TabLabel.Text = "TAB"
+TabLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TabLabel.Font = Enum.Font.SourceSansBold
+TabLabel.TextSize = 20 -- Adjusted text size
+TabLabel.TextWrapped = true
+ContentFrames["Tab"].Visible = true
+
+-- Info Content
+local InfoLabel = Instance.new("TextLabel")
+InfoLabel.Parent = ContentFrames["Info"]
+InfoLabel.Size = UDim2.new(1, -20, 0, 50)
+InfoLabel.Position = UDim2.new(0, 10, 0, 10)
+InfoLabel.BackgroundTransparency = 1
+InfoLabel.Text = "This script is created by ryzu."
+InfoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+InfoLabel.Font = Enum.Font.SourceSans
+InfoLabel.TextSize = 14 -- Adjusted text size
+InfoLabel.TextWrapped = true
+
+-- Trade Content
+local TradeButtons = {"Start Trade", "Freeze Trade", "Force Trade"}
+for i, text in ipairs(TradeButtons) do
+    local Button = Instance.new("TextButton")
+    Button.Parent = ContentFrames["Trade"]
+    Button.Size = UDim2.new(0.8, 0, 0, 25) -- Adjusted size
+    Button.Position = UDim2.new(0.1, 0, 0, 10 + (i - 1) * 35)
+    Button.BackgroundColor3 = Color3.fromRGB(50, 50, 75)
+    Button.Text = text
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Font = Enum.Font.SourceSansBold
+    Button.TextSize = 12
+end
+
+-- Switching Categories
+for i, category in ipairs(Categories) do
+    SideMenu[category .. "Button"].MouseButton1Click:Connect(function()
+        for _, frame in pairs(ContentFrames) do
+            frame.Visible = false
+        end
+        ContentFrames[category].Visible = true
+    end)
+end
+
+-- Exit Popup
+local ExitPopup = Instance.new("Frame")
+ExitPopup.Name = "ExitPopup"
+ExitPopup.Parent = ScreenGui
+ExitPopup.Size = UDim2.new(0, 200, 0, 100)
+ExitPopup.Position = UDim2.new(0.5, -100, 0.5, -50)
+ExitPopup.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+ExitPopup.Visible = false
+
+-- Exit Popup Implementation
+-- Same as previous script, compact layout retained
